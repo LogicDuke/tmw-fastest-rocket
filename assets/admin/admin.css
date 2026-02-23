@@ -1,0 +1,31 @@
+/* TMW Fastest Rocket admin UI */
+.tmwfr-wrap .tmwfr-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:16px;
+  align-items:start;
+}
+
+@media (max-width: 960px){
+  .tmwfr-wrap .tmwfr-grid{ grid-template-columns: 1fr; }
+}
+
+.tmwfr-wrap .tmwfr-card{
+  background:#fff;
+  border:1px solid #ccd0d4;
+  border-radius:6px;
+  padding:16px;
+}
+
+.tmwfr-wrap .tmwfr-card h2{
+  margin-top:0;
+}
+
+.tmwfr-wrap .tmwfr-list{
+  margin:0;
+  padding-left:18px;
+}
+
+.tmwfr-wrap .tmwfr-table td.description{
+  color:#646970;
+}
