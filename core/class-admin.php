@@ -35,6 +35,11 @@ final class Admin {
         add_submenu_page($slug, 'JavaScript', 'JavaScript', $cap, 'tmwfr-js', [__CLASS__, 'page_js']);
         add_submenu_page($slug, 'Cache', 'Cache', $cap, 'tmwfr-cache', [__CLASS__, 'page_cache']);
         add_submenu_page($slug, 'Compatibility', 'Compatibility', $cap, 'tmwfr-compat', [__CLASS__, 'page_compat']);
+
+        if (TMW_Performance_Advisor::is_available()) {
+            add_submenu_page($slug, 'Performance Advisor', 'Performance Advisor', $cap, 'tmwfr-performance-advisor', [__CLASS__, 'page_performance_advisor']);
+        }
+
         add_submenu_page($slug, 'Logs', 'Logs', $cap, 'tmwfr-logs', [__CLASS__, 'page_logs']);
         add_submenu_page($slug, 'Import / Export', 'Import / Export', $cap, 'tmwfr-import-export', [__CLASS__, 'page_import_export']);
     }
@@ -635,6 +640,68 @@ final class Admin {
             }
         }
         return array_values(array_unique($out));
+    }
+
+
+    public static function page_performance_advisor(): void {
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+
+        if (!TMW_Performance_Advisor::is_available()) {
+            echo '<div class="wrap tmwfr-wrap">';
+            echo '<h1>Performance Advisor</h1>';
+            echo '<p>Lighthouse Advisor is unavailable because TMW SEO Engine Lighthouse module was not detected.</p>';
+            echo '</div>';
+            return;
+        }
+
+        $mobile = array_slice(TMW_Performance_Advisor::get_lighthouse_issues('mobile'), 0, 5);
+        $desktop = array_slice(TMW_Performance_Advisor::get_lighthouse_issues('desktop'), 0, 5);
+
+        echo '<div class="wrap tmwfr-wrap">';
+        echo '<h1>Performance Advisor</h1>';
+        echo '<p>Read-only Lighthouse advisory data from TMW SEO Engine. No settings are auto-applied.</p>';
+
+        echo '<div class="tmwfr-grid">';
+
+        echo '<div class="tmwfr-card">';
+        echo '<h2>🔥 Mobile Systemic Issues</h2>';
+        self::render_advisor_issues_table($mobile);
+        echo '</div>';
+
+        echo '<div class="tmwfr-card">';
+        echo '<h2>🖥 Desktop Systemic Issues</h2>';
+        self::render_advisor_issues_table($desktop);
+        echo '</div>';
+
+        echo '</div>';
+        echo '</div>';
+    }
+
+    /** @param array<int,array<string,mixed>> $issues */
+    private static function render_advisor_issues_table(array $issues): void {
+        if (empty($issues)) {
+            echo '<p>No systemic issues were reported for this strategy.</p>';
+            return;
+        }
+
+        echo '<table class="widefat striped tmwfr-table">';
+        echo '<thead><tr><th>Audit ID</th><th>Affected URLs</th><th>Suggested Rocket Module</th></tr></thead><tbody>';
+
+        foreach ($issues as $issue) {
+            $audit_id = isset($issue['audit_id']) ? (string) $issue['audit_id'] : '';
+            $affected = isset($issue['affected_urls']) ? absint((int) $issue['affected_urls']) : 0;
+            $suggested = isset($issue['suggested_module']) ? (string) $issue['suggested_module'] : '';
+
+            echo '<tr>';
+            echo '<td><code>' . esc_html($audit_id) . '</code></td>';
+            echo '<td>' . esc_html((string) $affected) . '</td>';
+            echo '<td>' . ($suggested !== '' ? esc_html($suggested) : '—') . '</td>';
+            echo '</tr>';
+        }
+
+        echo '</tbody></table>';
     }
 
     public static function page_compat(): void {
