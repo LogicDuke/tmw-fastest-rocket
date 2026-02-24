@@ -32,6 +32,7 @@ final class Bootstrap {
         require_once TMWFR_DIR . 'core/class-logger.php';
         require_once TMWFR_DIR . 'core/class-context.php';
         require_once TMWFR_DIR . 'core/class-compat.php';
+        require_once TMWFR_DIR . 'core/class-performance-advisor.php';
         require_once TMWFR_DIR . 'core/class-safemode.php';
         require_once TMWFR_DIR . 'core/class-admin.php';
         require_once TMWFR_DIR . 'core/class-modules.php';
